@@ -52,13 +52,11 @@ class exit:
         except:
             print('"At Exit" Detected Server is Already Closed')
 
-def runWebServer(htmlDict,port=27554):
+def runWebServer(fileDirs,port=27554):
     class createClass(BaseHTTPRequestHandler):
         def do_GET(self):
             # defaults
-            f = open(htmlDict['main'],"r")
-            mainContent = f.read()
-            f.close()
+
             contents = "empty"
             contentType = "text/html"
             # reset Servers
@@ -69,15 +67,16 @@ def runWebServer(htmlDict,port=27554):
             cmd = cmd.replace("/","",1)
 
             print(cmd)
-            if cmd == "":
-                print("main")
-                contents = mainContent
-                contentType = fileExDict["html"]
+            if cmd == "": cmd = "main"
+            f = open(fileDirs[cmd],"rb")
+            contents = f.read()
+            f.close()
+            contentType = fileExDict[fileDirs[cmd].split('.')[-1]]
 
             self.send_response(200)
             self.send_header("Content-type", contentType)
             self.end_headers()
-            self.wfile.write(contents.encode())
+            self.wfile.write(contents)
 
     server_address = ('', port)
     server = HTTPServer(server_address,createClass)
@@ -91,5 +90,8 @@ def runWebServer(htmlDict,port=27554):
 if __name__ == "__main__":
 
     #createDirFromZip(pyPath + fileSeperator+"FileServerFiles"+fileSeperator+"output-2.zip","FileServerFiles")
-    tree = {"main":"main.html"}
-    runWebServer(tree)
+    fileDirs = {"main":"main.html",
+            "favicon.ico":"favicon.ico",
+            "anger":"catmemes\\angerCat.jpg",
+            "happy":"catmemes\\happy-catto-cats.gif"}
+    runWebServer(fileDirs)

@@ -6,6 +6,6 @@ i1.url="https://i.pinimg.com/736x/b9/c4/7e/b9c47ef70bff06613d397abfce02c6e7.jpg"
 c.t="a";c.c="";c.i=i1;
 d.t="p";d.c="Isn't he so friendly?";
 b1.content = "Yes";b1.a.style="color:red";
-e.t="a";e<b1;e.a.href="https://google.com";
+e.t="a";e<b1;e.a.href="/happy";
 b2.content = "No";b2.a.style="color:green";
-f.t="a";f<b2;f.a.href="https://bing.com";
+f.t="a";f<b2;f.a.href="/anger";
