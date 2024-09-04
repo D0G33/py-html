@@ -1,18 +1,24 @@
 head.title = "gamers are cool";
 
->format;
+#Doc Format;
+$line1;
+$img;
+$text1; $duckduckgo;
 
-+img1;
+$image_img1;
 img1.url = "http://69.221.125.127:27554/command=getFile???memes+++happy-cat.gif";
 
 line1.tag = "h1";
 line1.content = "Welcome to the Test Page!";
 
+img.tag = "h1";
+img.content = "";
+img.img = img1;
+
 text1.tag = "a";
 text1.content = "Here is a Link To Duck Duck Go:";
-text1.img = img1;
 
 duckduckgo << link;
 duckduckgo.a.href = "https://duckduckgo.com";
-duckduckgo.content = "Gamers are Cool";
+duckduckgo.content = "Duck Duck Go";
 

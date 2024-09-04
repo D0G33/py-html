@@ -1,0 +1,11 @@
+head.title="ohno";
+$a;$b;$c;$d;$e;$f;$i_i1;$b_b1;$b_b2;
+a.t="h1";a.c="Welcome To My Website";
+b.t="p";b.c="This cat will stare at you.";
+i1.url="https://i.pinimg.com/736x/b9/c4/7e/b9c47ef70bff06613d397abfce02c6e7.jpg";i1.style="width:100px;height:100px";
+c.t="a";c.c="";c.i=i1;
+d.t="p";d.c="Isn't he so friendly?";
+b1.content = "Yes";b1.a.style="color:red";
+e.t="a";e<b1;e.a.href="https://google.com";
+b2.content = "No";b2.a.style="color:green";
+f.t="a";f<b2;f.a.href="https://bing.com";

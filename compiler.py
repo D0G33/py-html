@@ -43,15 +43,20 @@ class htmlObj:
         self.content = ""
         self.attributes = {}
         self.img = ""
+        self.inserts = []
     def __str__(self):
         atr = " "
         for i in self.attributes:
             atr += i + "=" + self.attributes[i]
             atr += " "
+        inserts =  " "
+        for i in self.inserts:
+            inserts += i+" "
         if atr == " ": atr = ""
+        if inserts == " ": inserts = ""
         if self.img != "":
-            return "<" + self.tag + atr + ">" + self.img + self.content + "</" + self.tag + ">"
-        return "<" + self.tag + atr + ">" + self.content + "</" + self.tag + ">"
+            return "<" + self.tag + atr + ">" + self.img + inserts + self.content + "</" + self.tag + ">"
+        return "<" + self.tag + atr + ">" + inserts + self.content + "</" + self.tag + ">"
     def __add__(self,other):
         return other + str(self)
     def __radd__(self,other):
@@ -74,6 +79,27 @@ class htmlImg:
         return other + str(self)
     def __radd__(self,other):
         return other + str(self)
+
+class htmlButton:
+    def __init__(self):
+        self.tag = "button"
+        self.content = "default text"
+        self.attributes = {"type":"button"}
+        self.img = ""
+    def __str__(self):
+        atr = " "
+        for i in self.attributes:
+            atr += i + "=" + self.attributes[i]
+            atr += " "
+        if atr == " ": atr = ""
+        if self.img != "":
+            return "<" + self.tag + atr + ">" + self.img + self.content + "</" + self.tag + ">"
+        return "<" + self.tag + atr + ">" + self.content + "</" + self.tag + ">"
+    def __add__(self,other):
+        return other + str(self)
+    def __radd__(self,other):
+        return other + str(self)
+
 # Builtins
 link = htmlObj()
 link.tag = "a"
@@ -95,6 +121,9 @@ class pyml:
         self.body = {}
 
         self.images = {}
+
+        self.inputs = {}
+
         self.references = {"link":link}
 
     def createFile(self,name="main"):
@@ -120,7 +149,7 @@ class pyml:
     def populate(self):
         noWhite = rmWQ(self.content.replace("\t",""),'\n')
         keepQuotes = rmWQ(noWhite," ")
-        commands = keepQuotes.split(";")
+        commands = splitWQ(keepQuotes,";")
         commands.pop(-1)
 
         #Create Includes
@@ -148,55 +177,92 @@ class pyml:
             i += 1
 
         self.comps = {}
-        for i in commands:
+        for c, i in enumerate(commands):
             parts = splitWQ(i,".")
 
             if parts[0] == "head":
                 self.head[parts[1].split("=")[0]] = parts[1].split("=")[1].replace('"',"")
 
             elif i[0] == "$":
-                print(i[1:] + ": Added to Components!")
-                self.comps[i[1:]] = htmlObj()
+                if "_" in i[1:]:
+                    s = i[1:].split("_",1)
+                    if s[0] == "image" or s[0] == "i":
+                        self.images[s[1]] = htmlImg()
+                    if s[0] == "button" or s[0] == "b":
+                        self.references[s[1]] = htmlButton()
+                else:
+                    print(i[1:] + ": Added to Components!")
+                    self.comps[i[1:]] = htmlObj()
 
             elif i[0] == "&":
                 self.references[i[1:]] = self.comps[i[1:]]
                 self.comps.pop(i[1:])
                 print(i[1:] + " Moved to Refs")
 
-            elif i[0] == "+":
-                self.images[i[1:]] = htmlImg()
-                print(i[1:] + " Image Created")
-
+            # Copying
             elif "<<" in i:
                 names = i.split("<<")
                 self.comps[names[0]] = self.references[names[1]]
                 print(names[0] + " set to reference " + names[1])
 
+            # Adding Inserts
+            elif "<" in i:
+                names = i.split("<")
+                self.comps[names[0]].inserts.append( self.references[names[1]] )
+                print(names[0] + " set to reference " + names[1])
+
             else:
-                if parts[1] == "a" or parts == "attributes":
-                    print(parts)
-                    if parts[2] != "del":
-                        partSplit = parts[2].split("=")
-                        self.comps[parts[0]].attributes[partSplit[0]] = partSplit[1].replace('"',"")
-                else:
-                    cmd = eCmd(i)
-
+                #if parts[1] == "a" or parts == "attributes":
+                #    print(parts)
+                #    if parts[2] != "del":
+                #        partSplit = parts[2].split("=")
+                #        self.comps[parts[0]].attributes[partSplit[0]] = partSplit[1].replace('"',"")
+                #else:
+                #    cmd = eCmd(i)
                 #Editting Image
-                if cmd[0] in self.images:
-                    print(cmd)
-                    if cmd[1] == "url":
-                        self.images[cmd[0]].attributes["src"] = cmd[2]
-                    if cmd[1] == "style":
-                        self.images[cmd[0]].attributes["style"] = cmd[2]
-
+                if parts[0] in self.images:
+                    if parts[1] != "a":
+                        cmd = eCmd(i)
+                        #print(cmd)
+                        if cmd[1] == "url":
+                            self.images[cmd[0]].attributes["src"] = cmd[2]
+                        if cmd[1] == "style":
+                            self.images[cmd[0]].attributes["style"] = cmd[2]
+                    else:
+                        aName = splitWQ(parts[2], "=")[0].replace('"', "")
+                        aProp = splitWQ(parts[2], "=")[1].replace('"', "")
+                        self.images[parts[0]].attributes[aName] = aProp
+                if parts[0] in self.references:
+                    if parts[1] != "a":
+                        cmd = eCmd(i)
+                        #print(cmd)
+                        if cmd[1] == "content":
+                            self.references[cmd[0]].content = cmd[2]
+                        if cmd[1] == "attributes" or cmd[1] == "a":
+                            self.images[cmd[0]].attributes[cmd[2]] = cmd[3]
+                    else:
+                        if len(parts) == 3:
+                            aName = splitWQ(parts[2],"=")[0].replace('"',"")
+                            aProp = splitWQ(parts[2],"=")[1].replace('"',"")
+                            self.references[parts[0]].attributes[aName] = aProp
+                        if len(parts) == 4:
+                            #print(parts)
+                            aName = parts[2]
+                            self.references[parts[0]].attributes.pop(aName)
                 else:
-                    if cmd[1] == "content":
-                        self.comps[cmd[0]].content = cmd[2]
-                    if cmd[1] == "tag":
-                        self.comps[cmd[0]].tag = cmd[2]
-                    if cmd[1] == "img" or cmd[1] == "image" or cmd[1] == 'i':
-
-                        self.comps[cmd[0]].img = self.images[cmd[2]]
+                    if parts[1] != "a":
+                        cmd = eCmd(i)
+                        if cmd[1] == "content" or cmd[1] == "c":
+                            self.comps[cmd[0]].content = cmd[2]
+                        if cmd[1] == "tag" or cmd[1] == "t":
+                            self.comps[cmd[0]].tag = cmd[2]
+                        if cmd[1] == "img" or cmd[1] == "image" or cmd[1] == 'i':
+                            self.comps[cmd[0]].img = self.images[cmd[2]]
+                    else:
+                        print(parts)
+                        aName = splitWQ(parts[2], "=")[0].replace('"', "")
+                        aProp = splitWQ(parts[2], "=")[1].replace('"', "")
+                        self.comps[parts[0]].attributes[aName] = aProp
 
 
         print("\n\nComponents:")
@@ -204,6 +270,6 @@ class pyml:
             print(i + ": " + self.comps[i])
 
 
-testDoc = pyml("main.pyml")
+testDoc = pyml("ohno.pyml")
 testDoc.populate()
 testDoc.createFile("main")
