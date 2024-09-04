@@ -1,0 +1,20 @@
+head.title = "gamers are cool";
+
+#Locate the HTML Objects;
+
+$line1;
+$text1;
+$duckduckgo;
+
+
+
+line1.tag = "h1";
+line1.content = "Welcome to the Test Page!";
+
+text1.tag = "p";
+text1.content = "Here is a Link To Duck Duck Go:";
+
+duckduckgo << link;
+duckduckgo.a.href = "https://duckduckgo.com";
+duckduckgo.content = "Gamers are Cool";
+
