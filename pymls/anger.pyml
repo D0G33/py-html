@@ -1,0 +1,5 @@
+head.title = "angery";
+$title;$image_cat;$catCont;
+title.tag = "h1"; title.content = "Oh No... He is angry!!!!";
+cat.url = "angerIMG"; cat.style="width:200px;height:200px";
+catCont.i = cat;

@@ -270,6 +270,6 @@ class pyml:
             print(i + ": " + self.comps[i])
 
 
-testDoc = pyml("ohno.pyml")
+testDoc = pyml("pymls\\anger.pyml")
 testDoc.populate()
-testDoc.createFile("main")
+testDoc.createFile("htmls\\anger")

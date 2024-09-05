@@ -1,13 +1,10 @@
-import base64
 from http.server import *
 import atexit
-import urllib.request
 import os
-import socket
-import zipfile as zf
-import shutil
 
-hostIp = socket.gethostbyname(socket.gethostname())
+
+#hostIp = socket.gethostbyname(socket.gethostname())
+hostIp = "10.0.0.144"
 
 servers = []
 
@@ -89,9 +86,11 @@ def runWebServer(fileDirs,port=27554):
 
 if __name__ == "__main__":
 
-    #createDirFromZip(pyPath + fileSeperator+"FileServerFiles"+fileSeperator+"output-2.zip","FileServerFiles")
-    fileDirs = {"main":"main.html",
+    fileDirs = {"main":"htmls\\main.html",
             "favicon.ico":"favicon.ico",
-            "anger":"catmemes\\angerCat.jpg",
-            "happy":"catmemes\\happy-catto-cats.gif"}
+            "anger":"htmls\\anger.html",
+            "happy":"htmls\\happy.html",
+            "happyIMG":"catmemes\\happy-cat.gif",
+            "angerIMG":"catmemes\\angerCat.jpg"}
+
     runWebServer(fileDirs)
